@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basit Platform Oyunu</title>
+    <style>
+        /* CSS kodları burada */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+
+        #container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #game-container {
+            width: 100%; /* Ekranın tamamını kaplaması için genişlik 100% yapıldı */
+            height: calc(100vh - 100px); /* Ekranın yüksekliğinin üst kısmını kaplaması için eklenmiş bir hesaplama */
+            border: 2px solid #333;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        #platform {
+            width: 100%;
+            height: 20px;
+            background-color: #333;
+            position: absolute;
+            bottom: 0;
+        }
+
+        #player {
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            position: absolute;
+            bottom: 150px; /* Yukarıya doğru kaydırıldı */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #score {
+            font-size: 24px;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .obstacle {
+            width: 20px;
+            height: 20px;
+            background-color: blue;
+            position: absolute;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="game-container">
+            <div id="platform"></div>
+            <div id="player"></div>
+        </div>
+        <div id="score">Skor: 0</div>
+        <button id="startButton">Başlat</button>
+        <button id="stopButton">Durdur</button>
+    </div>
+    
+    <script>
+        // JavaScript kodları burada
+        let gameInterval;
+        let score = 0;
+        let isRunning = false;
+        let playerPosition = 50; // Oyuncunun başlangıç pozisyonu
+        let isGameOver = false;
+
+        document.getElementById("startButton").addEventListener("click", startGame);
+        document.getElementById("stopButton").addEventListener("click", stopGame);
+
+        function startGame() {
+            if (!isRunning) {
+                isRunning = true;
+                isGameOver = false; // Oyun başladığında oyunun bitmediğini belirtmek için
+                document.getElementById("startButton").disabled = true;
+                document.getElementById("stopButton").disabled = false;
+                document.getElementById("score").innerText = "Skor: 0";
+                score = 0;
+                // Engelleri ve skoru sıfırla
+                document.querySelectorAll('.obstacle').forEach(function(element) {
+                    element.remove();
+                });
+                clearInterval(gameInterval);
+                gameInterval = setInterval(createObstacle, 400); // Zaman aralığını 1500 milisaniye olarak değiştirdik
+                // Klavye olaylarını dinleme
+                document.addEventListener("keydown", movePlayer);
+            }
+        }
+
+        function stopGame() {
+            clearInterval(gameInterval);
+            isRunning = false;
+            document.getElementById("startButton").disabled = false;
+            document.getElementById("stopButton").disabled = true;
+            // Klavye olaylarını durdurma
+            document.removeEventListener("keydown", movePlayer);
+        }
+
+        function movePlayer(event) {
+            const key = event.key;
+            if (key === "ArrowLeft") {
+                // Sol tuşa basıldığında
+                if (playerPosition > 0) {
+                    playerPosition -= 5; // 5 birim sola hareket
+                    updatePlayerPosition();
+                }
+            } else if (key === "ArrowRight") {
+                // Sağ tuşa basıldığında
+                if (playerPosition < 100) {
+                    playerPosition += 5; // 5 birim sağa hareket
+                    updatePlayerPosition();
+                }
+            }
+        }
+
+        // Oyuncunun görünür konumunu güncelleme
+        function updatePlayerPosition() {
+            document.getElementById("player").style.left = `${playerPosition}%`;
+        }
+
+        function createObstacle() {
+            const obstacle = document.createElement("div");
+            obstacle.classList.add("obstacle");
+            obstacle.style.left = `${Math.random() * 90 + 5}%`;
+            document.getElementById("game-container").appendChild(obstacle);
+
+            const obstacleMoveInterval = setInterval(function() {
+                const obstacleBottom = parseInt(window.getComputedStyle(obstacle).bottom);
+                const playerLeft = parseInt(window.getComputedStyle(player).left);
+                const playerBottom = parseInt(window.getComputedStyle(player).bottom);
+                const obstacleLeft = parseInt(window.getComputedStyle(obstacle).left);
+
+                if (!isGameOver && (
+                    playerBottom <= obstacleBottom + 20 &&
+                    playerBottom + 50 >= obstacleBottom &&
+                    playerLeft + 50 >= obstacleLeft &&
+                    playerLeft <= obstacleLeft + 20
+                )) {
+                    clearInterval(obstacleMoveInterval);
+                    stopGame();
+                    isGameOver = true; // Oyun bittiğinde oyunun bittiğini belirtmek için
+                    alert("Oyun bitti! Skorunuz: " + score);
+                }
+
+                obstacle.style.bottom = `${obstacleBottom + 5}px`;
+
+                if (obstacleBottom >= window.innerHeight) {
+                    clearInterval(obstacleMoveInterval);
+                    obstacle.remove();
+                }
+
+                // Skoru artır
+                if (!isGameOver && parseInt(obstacle.style.bottom) >= (window.innerHeight - 20)) {
+                    score++;
+                    document.getElementById("score").innerText = "Skor: " + score;
+                }
+            }, 20);
+        }
+    </script>
+</body>
+</html>
