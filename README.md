@@ -52,4 +52,4 @@ Oyuncunun zıplama yeteneği eklenerek platform mekanikleri geliştirilebilir.
 
 Engellerin hızını zamanla artırarak oyun daha zor hale getirilebilir.
 
-Bu proje ile ilgili geliştirmeler yaparak daha kapsamlı bir oyun oluşturabilirsiniz!
+Bu proje ile ilgili geliştirmeler yaparak daha kapsamlı bir oyun oluşturabilirsiniz! 
