@@ -1,3 +1,5 @@
+https://alpaguttt.github.io/web-based-javascript-game/
+
 Basit Platform Oyunu
 
 Bu proje, HTML, CSS ve JavaScript kullanılarak geliştirilmiş basit bir platform oyunudur. Oyuncu, ekrandaki kırmızı kareyi ("player") yön tuşlarıyla kontrol eder ve ekrandan düşen engellerden kaçmaya çalışır.
